@@ -9,8 +9,8 @@
     "type": "git",
     "url": "https://github.com/BerylBit/Launchpad-sdk.git"
   },
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
