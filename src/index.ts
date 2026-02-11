@@ -8,16 +8,16 @@ import idl from "./idl.json";
 export type LaunchpadSdkConfig = {
   programId: PublicKey;
   connection: Connection;
-  wallet: anchor.Wallet; // anchor wallet wrapper around your signer
+  wallet: anchor.Wallet;
   commitment?: anchor.web3.Commitment;
 };
 
 export type InitializeGlobalArgs = {
   treasury: PublicKey;
-  maxImpactBps: number; // e.g. 200 = 2%
-  maxBuyBpsOfReserve: number; // e.g. 100 = 1%
-  maxSellImpactBps: number; // e.g. 100 = 1%
-  minCooldownSecs: number; // e.g. 30
+  maxImpactBps: number;
+  maxBuyBpsOfReserve: number;
+  maxSellImpactBps: number;
+  minCooldownSecs: number;
 };
 
 export type CreateMarketArgs = {
@@ -37,7 +37,6 @@ export type CreateMarketArgs = {
   sellMaxPerCallLamports: anchor.BN;
   sellMinVolumeWindowLamports: anchor.BN;
 
-  // Accounts you may create/derive elsewhere (depending on your program design)
   tokenVault: PublicKey;
   solVault?: PublicKey;
   payer?: PublicKey;
@@ -89,14 +88,17 @@ export class LaunchpadSDK {
       { commitment: cfg.commitment ?? "confirmed" }
     );
 
-    // Anchor global provider (optional but common)
+    // Optional: Anchor global provider
     anchor.setProvider(this.provider);
 
-    this.program = new anchor.Program(
-      idl as anchor.Idl,
-      cfg.programId,
-      this.provider
-    );
+    // Anchor v0.30 expects programId to be present on idl.address.
+    // Our public/reference IDL may not include address/metadata, so we set them at runtime.
+    const runtimeIdl = idl as unknown as anchor.Idl & { address?: string; metadata?: any };
+    runtimeIdl.address = cfg.programId.toBase58();
+    runtimeIdl.metadata = runtimeIdl.metadata ?? { name: "launchpad_core" };
+
+    // Anchor v0.30 Program constructor: new Program(idl, provider)
+    this.program = new anchor.Program(runtimeIdl as any, this.provider);
   }
 
   // -----------------------------
@@ -126,18 +128,17 @@ export class LaunchpadSDK {
     return pda;
   }
 
-  // If your program also uses a token vault PDA, add that helper too.
-  // tokenVaultPda(mint: PublicKey): PublicKey { ... }
-
   // -----------------------------
-  // Reads
+  // Reads (typed loosely so SDK works with a reference IDL)
   // -----------------------------
   async getGlobalConfig() {
-    return this.program.account.globalConfig.fetch(this.globalConfigPda());
+    const acct = (this.program.account as any).globalConfig;
+    return acct.fetch(this.globalConfigPda());
   }
 
   async getMarket(market: PublicKey) {
-    return this.program.account.market.fetch(market);
+    const acct = (this.program.account as any).market;
+    return acct.fetch(market);
   }
 
   // -----------------------------
@@ -150,12 +151,12 @@ export class LaunchpadSDK {
         maxImpactBps: args.maxImpactBps,
         maxBuyBpsOfReserve: args.maxBuyBpsOfReserve,
         maxSellImpactBps: args.maxSellImpactBps,
-        minCooldownSecs: args.minCooldownSecs,
+        minCooldownSecs: args.minCooldownSecs
       })
       .accounts({
         admin: this.provider.wallet.publicKey,
         globalConfig: this.globalConfigPda(),
-        systemProgram: anchor.web3.SystemProgram.programId,
+        systemProgram: anchor.web3.SystemProgram.programId
       })
       .rpc();
 
@@ -178,7 +179,7 @@ export class LaunchpadSDK {
         sellCooldownSecs: args.sellCooldownSecs,
         sellMaxImpactBps: args.sellMaxImpactBps,
         sellMaxPerCallLamports: args.sellMaxPerCallLamports,
-        sellMinVolumeWindowLamports: args.sellMinVolumeWindowLamports,
+        sellMinVolumeWindowLamports: args.sellMinVolumeWindowLamports
       })
       .accounts({
         payer,
@@ -189,7 +190,7 @@ export class LaunchpadSDK {
         solVault,
         tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
         systemProgram: anchor.web3.SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+        rent: anchor.web3.SYSVAR_RENT_PUBKEY
       })
       .rpc();
 
@@ -206,7 +207,7 @@ export class LaunchpadSDK {
         solVault: args.solVault,
         buyerTokenAccount: args.buyerTokenAccount,
         tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId,
+        systemProgram: anchor.web3.SystemProgram.programId
       })
       .rpc();
 
@@ -222,7 +223,7 @@ export class LaunchpadSDK {
         sellerTokenAccount: args.sellerTokenAccount,
         tokenVault: args.tokenVault,
         solVault: args.solVault,
-        tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
+        tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID
       })
       .rpc();
 
@@ -234,7 +235,7 @@ export class LaunchpadSDK {
       .graduate()
       .accounts({
         admin: this.provider.wallet.publicKey,
-        market,
+        market
       })
       .rpc();
 
@@ -250,7 +251,7 @@ export class LaunchpadSDK {
         treasury: args.treasury,
         creatorWallet: args.creatorWallet,
         marketingWallet: args.marketingWallet,
-        systemProgram: anchor.web3.SystemProgram.programId,
+        systemProgram: anchor.web3.SystemProgram.programId
       })
       .rpc();
 
