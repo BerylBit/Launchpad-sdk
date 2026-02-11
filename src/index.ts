@@ -88,21 +88,19 @@ export class LaunchpadSDK {
       { commitment: cfg.commitment ?? "confirmed" }
     );
 
-    // Optional: Anchor global provider
     anchor.setProvider(this.provider);
 
-    // Anchor v0.30 expects programId to be present on idl.address.
-    // Our public/reference IDL may not include address/metadata, so we set them at runtime.
+    // Anchor v0.30 expects idl.address + idl.metadata (not always present in reference/public IDLs).
     const runtimeIdl = idl as unknown as anchor.Idl & { address?: string; metadata?: any };
     runtimeIdl.address = cfg.programId.toBase58();
     runtimeIdl.metadata = runtimeIdl.metadata ?? { name: "launchpad_core" };
 
-    // Anchor v0.30 Program constructor: new Program(idl, provider)
+    // Anchor v0.30 Program constructor signature: new Program(idl, provider)
     this.program = new anchor.Program(runtimeIdl as any, this.provider);
   }
 
   // -----------------------------
-  // PDA helpers (must match your program seeds)
+  // PDA helpers
   // -----------------------------
   globalConfigPda(): PublicKey {
     const [pda] = PublicKey.findProgramAddressSync(
@@ -129,7 +127,7 @@ export class LaunchpadSDK {
   }
 
   // -----------------------------
-  // Reads (typed loosely so SDK works with a reference IDL)
+  // Reads (loose typing so reference IDL works)
   // -----------------------------
   async getGlobalConfig() {
     const acct = (this.program.account as any).globalConfig;
@@ -259,9 +257,7 @@ export class LaunchpadSDK {
   }
 }
 
-// -----------------------------
-// Convenience: create wallet from Keypair (useful for scripts)
-// -----------------------------
+// Convenience for scripts
 export function walletFromKeypair(kp: Keypair): anchor.Wallet {
   return new anchor.Wallet(kp);
 }
