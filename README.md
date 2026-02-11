@@ -1,14 +1,25 @@
-# @berylbit/launchpad-sdk
 
-Official TypeScript SDK for interacting with the **Berylbit Launchpad** protocol.
 
-This SDK wraps the on-chain program into clean, safe functions so integrators don’t need to manually derive PDAs, build transactions, or decode accounts.
+# Berylbit Launchpad SDK
 
-> **Note:** This is a reference SDK. It is not an audit and does not guarantee safety by itself.
+Official TypeScript SDK for interacting with the **Berylbit Launchpad** protocol on Solana.
+
+This SDK is the primary integration surface for:
+- frontends
+- bots / keepers
+- analytics dashboards
+- partner launch tooling
+
+It wraps the on-chain program into clean, composable functions so integrators do **not** need to:
+- manually derive PDAs
+- build raw instructions
+- decode account layouts
+- track Anchor version changes
 
 ---
 
-## Install
+## Install (GitHub)
 
+### Stable (recommended)
 ```bash
-npm install @berylbit/launchpad-sdk
+npm install github:BerylBit/Launchpad-sdk#v0.1.0
