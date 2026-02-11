@@ -12,16 +12,12 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "sideEffects": false,
   "scripts": {
-  "build": "tsup src/index.ts --format cjs,esm --dts --sourcemap --clean",
-  "clean": "rmdir /s /q dist",
-  "prepublishOnly": "npm run build"
-}
-
+    "build": "tsup src/index.ts --format cjs,esm --dts --sourcemap --clean",
+    "clean": "rmdir /s /q dist",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.0",
