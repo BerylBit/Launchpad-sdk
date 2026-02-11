@@ -1,9 +1,9 @@
 {
   "name": "@berylbit/launchpad-sdk",
   "version": "0.1.0",
-  "description": "Official TypeScript SDK for interacting with the Berylbit Launchpad protocol",
-  "license": "MIT",
+  "description": "Official TypeScript SDK for interacting with the Berylbit Launchpad protocol on Solana",
   "author": "Berylbit",
+  "license": "MIT",
   "homepage": "https://github.com/BerylBit/Launchpad-sdk",
   "repository": {
     "type": "git",
@@ -12,10 +12,14 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --sourcemap --clean",
+    "build": "tsup",
     "clean": "rmdir /s /q dist",
     "prepublishOnly": "npm run build"
   },
