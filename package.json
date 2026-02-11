@@ -1,1 +1,33 @@
+{
+  "name": "@berylbit/launchpad-sdk",
+  "version": "0.1.0",
+  "description": "Official SDK for interacting with the Berylbit Launchpad protocol",
+  "license": "MIT",
+  "author": "Berylbit",
+  "homepage": "https://github.com/berylbit/launchpad-sdk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/berylbit/launchpad-sdk.git"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.0",
+    "@solana/web3.js": "^1.95.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "tsup": "^8.0.1"
+  }
+}
 
