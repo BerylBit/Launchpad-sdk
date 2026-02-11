@@ -1,47 +1,165 @@
 
-
 # Berylbit Launchpad SDK 
 
-Official TypeScript SDK for interacting with the **Berylbit Launchpad** protocol on **Solana**.
-https://t.me/Berylbit
+Official TypeScript / JavaScript SDK for interacting with the **Berylbit Launchpad** protocol on Solana. https://t.me/Berylbit
 
-This repository contains the **public client-side integration layer** used by applications, bots, and partners to interact with the Berylbit on-chain program.
+This SDK allows developers to **connect to**, **read from**, and **build on top of** the Berylbit Launchpad without access to the private on-chain core.
 
-> **Important:** This repository does **not** contain the on-chain program source code.
 > The core protocol logic is intentionally private.
+> This SDK is the public integration layer.
 
 ---
 
-## What This SDK Is
+## What can I do with this SDK?
 
-The Berylbit Launchpad SDK is a **thin, strongly-typed client wrapper** around the on-chain Berylbit Launchpad program.
+* Build launchpad frontends
+* Read markets and protocol state
+* Build bots / keepers / analytics
+* Prepare integrations before public launch
 
-It provides:
-
-* Safe instruction builders
-* PDA derivation helpers
-* Typed account decoding
-* A clean interface for frontends, bots, and keepers
-
-This allows integrators to work with the protocol **without**:
-
-* Manually deriving PDAs
-* Writing raw transactions
-* Handling low-level Anchor plumbing
-* Copying protocol logic
+This SDK is **build-ready**.
+Public token launches are **not enabled yet**.
 
 ---
 
-## What This SDK Is Not
+## Requirements
 
-* ❌ This is **not** the on-chain program
-* ❌ This is **not** a forkable launchpad
-* ❌ This does **not** expose proprietary execution logic
-* ❌ This is **not** a full reference implementation
+* Node.js v18+
+* npm or yarn
+* Basic JavaScript or TypeScript knowledge
 
-The **Launchpad Core** (bonding curve logic, execution rules, value capture mechanisms) is private and deployed on-chain.
+No Solana CLI required for basic usage.
 
 ---
+
+## Quick Start (see it work in 2 minutes)
+
+### 1️⃣ Create a new project
+
+```bash
+mkdir berylbit-test
+cd berylbit-test
+npm init -y
+```
+
+---
+
+### 2️⃣ Install the SDK
+
+```bash
+npm install github:BerylBit/Launchpad-sdk
+```
+
+This installs the SDK into `node_modules/`.
+
+---
+
+### 3️⃣ Create a test file
+
+Create a file called `test.js`:
+
+```js
+const { LaunchpadSDK } = require("berylbit-launchpad-sdk");
+
+console.log("SDK loaded:", typeof LaunchpadSDK);
+```
+
+---
+
+### 4️⃣ Run it
+
+```bash
+node test.js
+```
+
+If you see:
+
+```
+SDK loaded: function
+```
+
+✅ The SDK is installed and working.
+
+You are now ready to build.
+
+---
+
+## Where is the SDK code?
+
+After install, the compiled SDK lives here:
+
+```
+node_modules/berylbit-launchpad-sdk/dist/
+```
+
+You **do not** need to open these files manually.
+
+You import the SDK in your own code and build on top of it.
+
+---
+
+## Connecting to the protocol (example)
+
+```js
+const { LaunchpadSDK } = require("berylbit-launchpad-sdk");
+const { Connection, PublicKey } = require("@solana/web3.js");
+
+const connection = new Connection("https://api.devnet.solana.com");
+
+const sdk = new LaunchpadSDK({
+  connection,
+  programId: new PublicKey("PROGRAM_ID_HERE")
+});
+
+console.log("Connected to Berylbit Launchpad");
+```
+
+> A public devnet program ID will be provided when available.
+
+---
+
+## Running repository examples (recommended)
+
+Examples are included **in this repository**.
+
+To run them:
+
+```bash
+git clone https://github.com/BerylBit/Launchpad-sdk
+cd Launchpad-sdk
+npm install
+```
+
+Copy environment config:
+
+```bash
+cp examples/.env.example .env
+```
+
+Run example:
+
+```bash
+node examples/read-market.ts
+```
+
+This will connect to the protocol and read market state.
+
+---
+
+## Project Structure (for clarity)
+
+```
+Launchpad-sdk/
+├── src/          # SDK client (TypeScript)
+├── examples/     # Example scripts
+├── dist/         # Compiled output (for npm)
+├── README.md
+├── package.json
+└── LICENSE
+```
+
+---
+
 
 ## Architecture Overview
 
@@ -66,92 +184,22 @@ The **Launchpad Core** (bonding curve logic, execution rules, value capture mech
 └──────────────────────────┘
 ```
 
----
 
-## Installation (GitHub)
+## Important Notes
 
-The SDK is currently distributed directly via GitHub.
-
-```bash
-npm install github:BerylBit/Launchpad-sdk
-```
-
-> Only the compiled `dist/` output is shipped to consumers.
-> Source code lives in this repository for transparency and review.
+* This SDK does **not** deploy contracts
+* This SDK does **not** custody funds
+* This SDK does **not** expose private protocol logic
+* All enforcement happens on-chain
 
 ---
 
-## Basic Usage
+## Status
 
-```ts
-import { LaunchpadSDK } from "berylbit-launchpad-sdk";
-import { Connection, PublicKey } from "@solana/web3.js";
-
-const connection = new Connection("https://api.mainnet-beta.solana.com");
-
-const sdk = new LaunchpadSDK({
-  connection,
-  programId: new PublicKey("BERYLbit_PROGRAM_ID_HERE"),
-});
-
-// Example: fetch global config
-const config = await sdk.getGlobalConfig();
-```
-
----
-
-## Use Cases
-
-This SDK is intended for:
-
-* Frontend launchpad UIs
-* Trading bots and keepers
-* Analytics dashboards
-* Partner integrations
-* Indexers and monitoring tools
-
----
-
-## Examples
-
-See the [`/examples`](./examples) directory for:
-
-* Market reads
-* Config fetching
-* Environment setup
-
----
-
-## Design Principles
-
-* **0% user trading fees**
-* **No hidden spreads**
-* **No forced routers**
-* **No transfer-tax tokens**
-* **Market-native value capture**
-* **Bot-resistant execution paths**
-
-The SDK exposes **interfaces**, not mechanisms.
-
----
-
-## Security & Audits
-
-This SDK:
-
-* Is a **client library**, not a custody system
-* Does not hold keys
-* Does not sign transactions on behalf of users
-
-All security assumptions are enforced by the on-chain program.
-
----
-
-## Versioning
-
-* Semantic versioning (`v0.x.y`)
-* Breaking changes documented per release
-* GitHub tags used for distribution
+* ✅ SDK: Live
+* 🔒 Core protocol: Private
+* 🧪 Public launches: Coming later
+* 🧱 Builders: Welcome
 
 ---
 
@@ -163,7 +211,9 @@ MIT © Berylbit
 
 ## Disclaimer
 
-This repository is provided for **integration purposes only**.
-It is **not an audit**, **not investment advice**, and **not a guarantee of protocol safety**.
+This SDK is provided for integration purposes only.
+Use at your own risk. This is not financial advice.
 
-Use at your own risk.
+---
+
+
