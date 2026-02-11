@@ -22,4 +22,4 @@ It wraps the on-chain program into clean, composable functions so integrators do
 
 ### Stable (recommended)
 ```bash
-npm install github:BerylBit/Launchpad-sdk#v0.1.0
+npm install github:BerylBit/Launchpad-sdk
